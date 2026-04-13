@@ -10,9 +10,7 @@ High Precision: Achieved 100% Accuracy on a test set of 149 augmented images wit
 
 Performance Dashboard: A built-in Streamlit dashboard for monitoring access logs, confusion matrices, and confidence distributions.
 
-Hybrid Monitoring: Supports both real-time camera streams (Laptop/Mobile via DroidCam) and automated folder monitoring.
-
-Safety Oriented: Designed for future integration with hardware like ESP32-CAM for localized security tasks.
+Hybrid Monitoring: Supports real-time automated folder monitoring.
 
 **🛠️ Tech Stack**
 
@@ -31,5 +29,3 @@ The system includes robust evaluation scripts to generate:
 Confusion Matrices to visualize class separation.
 
 Confidence Histograms to ensure model reliability.
-
-Classification Reports (Precision, Recall, F1-Score).
