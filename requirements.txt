@@ -1,7 +1,8 @@
-Pillow
-tensorflow
 fastapi
 uvicorn
+joblib
 tensorflow
-scikit-learn
+numpy
+pillow
+requests
 python-multipart
