@@ -1,7 +1,6 @@
-spaces
+
 fastapi
 uvicorn
-gradio
 tensorflow-cpu
 scikit-learn
 joblib
