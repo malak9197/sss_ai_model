@@ -96,6 +96,7 @@ async def predict_and_report(
         raise HTTPException(status_code=500, detail=str(e))
 
 # 4. واجهة Gradio
+# 4. واجهة Gradio
 @spaces.GPU
 def gradio_predict(img):
     if img is None:
@@ -111,8 +112,13 @@ demo = gr.Interface(
     fn=gradio_predict,
     inputs=gr.Image(type="pil", label="Upload Face Image"),
     outputs=gr.JSON(label="Prediction Result"),
-    title="🛡️ SSS AI: Face Recognition Module"
+    title="🛡️ SSS AI: Face Recognition Module",
+    description="FastAPI endpoints are running at /predict and /docs"
 )
 
 # دمج FastAPI داخل Gradio
 app = gr.mount_gradio_app(app, demo, path="/")
+
+# إبقاء السيرفر حياً بدون محاولة تشغيل Node.js SSR
+if __name__ == "__main__":
+    demo.launch(ssr_mode=False)
