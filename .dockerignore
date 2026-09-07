@@ -1,0 +1,19 @@
+# ملفات Git
+.git
+.gitignore
+
+# الكاش
+__pycache__
+*.pyc
+
+# تجاهل ملفات app1 و app2
+app1.py
+app2.py
+
+
+# ملفات بيئة العمل
+.venv
+venv
+.vscode
+README.md
+haarcascade_frontalface_default.xml

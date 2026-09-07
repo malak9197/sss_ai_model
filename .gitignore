@@ -1,0 +1,22 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# تجاهل ملفات app1 و app2 وكل النسخ المشتقة منها
+app1.py
+app2.py
+
+# البيئات الافتراضية
+.venv/
+venv/
+env/
+
+# ملفات المحرر والنظام
+.vscode/
+.idea/
+.DS_Store
+*.log
+
+
+haarcascade_frontalface_default.xml

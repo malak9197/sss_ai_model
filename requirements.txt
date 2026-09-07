@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+joblib
+tensorflow-cpu
+numpy
+pillow
+requests
+python-multipart
+scikit-learn
+requests
+gradio
