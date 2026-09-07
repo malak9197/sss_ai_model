@@ -8,6 +8,7 @@ import io
 import requests
 from PIL import Image
 import gradio as gr
+import spaces
 
 app = FastAPI(title="🛡️ SSS: AI Vision Module")
 
@@ -29,6 +30,7 @@ PERSON_MAP = {
 BACKEND_URL = "http://threes-3s.runasp.net/sensors/motion"
 API_KEY = "THIS_IS_A _SUPER_SECRET_KEY_FOR_SMART_HOME_PROJECT_2025"
 
+@spaces.GPU
 def run_inference(image: Image.Image):
     """دالة المعالجة والاستدلال المشتركة بين Gradio و FastAPI"""
     img = image.convert("RGB").resize((224, 224))
