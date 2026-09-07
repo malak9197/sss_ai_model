@@ -1,3 +1,4 @@
+import spaces
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from datetime import datetime, timezone
 import uuid
@@ -8,7 +9,14 @@ import io
 import requests
 from PIL import Image
 import gradio as gr
-import spaces
+
+# دالة مخصصة ليرصدها محرك ZeroGPU أثناء الـ Startup
+@spaces.GPU
+def init_gpu_check():
+    return "GPU Ready"
+
+# استدعاء مباشر لتأكيد وجود GPU Function
+_ = init_gpu_check()
 
 app = FastAPI(title="🛡️ SSS: AI Vision Module")
 
@@ -30,9 +38,7 @@ PERSON_MAP = {
 BACKEND_URL = "http://threes-3s.runasp.net/sensors/motion"
 API_KEY = "THIS_IS_A _SUPER_SECRET_KEY_FOR_SMART_HOME_PROJECT_2025"
 
-@spaces.GPU
 def run_inference(image: Image.Image):
-    """دالة المعالجة والاستدلال المشتركة بين Gradio و FastAPI"""
     img = image.convert("RGB").resize((224, 224))
     img_array = np.array(img, dtype=np.float32) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
@@ -78,7 +84,6 @@ async def predict_and_report(
             "cameraId": cameraId
         }
 
-        # إرسال التقرير للباك إند
         headers = {"X-Api-Key": API_KEY, "Content-Type": "application/json"}
         try:
             requests.post(BACKEND_URL, json=payload, headers=headers, timeout=5)
@@ -90,7 +95,8 @@ async def predict_and_report(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# 4. واجهة Gradio لاختبار الموديل بالمتصفح
+# 4. واجهة Gradio
+@spaces.GPU
 def gradio_predict(img):
     if img is None:
         return {"error": "يرجى رفع صورة للفحص"}
@@ -105,8 +111,8 @@ demo = gr.Interface(
     fn=gradio_predict,
     inputs=gr.Image(type="pil", label="Upload Face Image"),
     outputs=gr.JSON(label="Prediction Result"),
-    title="🛡️ SSS AI: Face Recognition Module",
-    description="FastAPI endpoints are running at /predict and /docs"
+    title="🛡️ SSS AI: Face Recognition Module"
 )
 
+# دمج FastAPI داخل Gradio
 app = gr.mount_gradio_app(app, demo, path="/")
