@@ -1,5 +1,5 @@
 import spaces
-from fastapi import File, UploadFile, HTTPException
+from fastapi import File, UploadFile, HTTPException, BackgroundTasks
 from datetime import datetime, timezone
 import uuid
 import joblib
@@ -16,7 +16,7 @@ feature_extractor = tf.keras.applications.MobileNetV2(
     input_shape=(224, 224, 3), include_top=False, weights='imagenet', pooling='avg'
 )
 
-# 2. الـ Contract Mapping
+# 2. Contract Mapping
 PERSON_MAP = {
     "Person1": {"code": "face_Person_01", "name": "Person 1"},
     "Person2": {"code": "face_Person_02", "name": "Person 2"},
@@ -24,9 +24,17 @@ PERSON_MAP = {
     "Person4": {"code": "face_Person_04", "name": "Person 4"}
 }
 
-# 3. بيانات الربط مع الـ ASP.NET Backend
+# 3. بيانات الربط
 BACKEND_URL = "http://threes-3s.runasp.net/sensors/motion"
 API_KEY = "THIS_IS_A _SUPER_SECRET_KEY_FOR_SMART_HOME_PROJECT_2025"
+
+def send_to_backend(payload: dict):
+    """إرسال غير متزامن للباك إند لعدم تعطيل الاستجابة"""
+    headers = {"X-Api-Key": API_KEY, "Content-Type": "application/json"}
+    try:
+        requests.post(BACKEND_URL, json=payload, headers=headers, timeout=2)
+    except Exception as e:
+        print(f"⚠️ Backend notification skipped/failed: {e}")
 
 @spaces.GPU
 def run_inference(image: Image.Image):
@@ -52,7 +60,7 @@ def run_inference(image: Image.Image):
 
     return detected_code, detected_name, conf
 
-# 4. واجهة Gradio التفاعلية
+# 4. واجهة Gradio
 def gradio_predict(img):
     if img is None:
         return {"error": "يرجى رفع صورة للفحص"}
@@ -70,9 +78,10 @@ demo = gr.Interface(
     title="🛡️ SSS AI: Face Recognition Module"
 )
 
-# 5. تسجيل مسار FastAPI (/predict) مباشرة على كائن FastAPI الخاص بـ Gradio
+# 5. مسار الـ API السريع
 @demo.app.post("/predict")
 async def predict_and_report(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...), 
     sensorId: str = "unknown_sensor", 
     cameraId: str = "unknown_camera"
@@ -94,11 +103,8 @@ async def predict_and_report(
             "cameraId": cameraId
         }
 
-        headers = {"X-Api-Key": API_KEY, "Content-Type": "application/json"}
-        try:
-            requests.post(BACKEND_URL, json=payload, headers=headers, timeout=5)
-        except Exception as e:
-            print(f"⚠️ Backend reporting failed: {e}")
+        # إرسال التقرير في الخلفية حتى يعود الرد للعميل فوراً
+        background_tasks.add_task(send_to_backend, payload)
 
         return payload
 
