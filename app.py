@@ -91,7 +91,7 @@ async def predict_and_report(
 # 4. واجهة Gradio لاختبار الموديل بالمتصفح
 def gradio_predict(img):
     if img is None:
-        return "برجاء رفع صورة للفحص"
+        return {"error": "يرجى رفع صورة للفحص"}
     code, name, conf = run_inference(img)
     return {
         "Person Name": name,
@@ -104,11 +104,11 @@ demo = gr.Interface(
     inputs=gr.Image(type="pil", label="Upload Face Image"),
     outputs=gr.JSON(label="Prediction Result"),
     title="🛡️ SSS AI: Face Recognition Module",
-    description="FastAPI Endpoints are running at /predict & /docs"
+    description="FastAPI endpoints are running at /predict and /docs"
 )
 
-# دمج تطبيق FastAPI داخل Gradio ليعمل التطبيق والـ API معاً على المنفذ 7860
+# دمج FastAPI داخل Gradio بدون تشغيل uvicorn يدوياً
 app = gr.mount_gradio_app(app, demo, path="/")
 
 if __name__ == "__main__":
-    demo.launch(app, host="0.0.0.0", port=7860)
+    demo.launch(server_name="0.0.0.0", server_port=7860)
