@@ -107,8 +107,4 @@ demo = gr.Interface(
     description="FastAPI endpoints are running at /predict and /docs"
 )
 
-# دمج FastAPI داخل Gradio بدون تشغيل uvicorn يدوياً
 app = gr.mount_gradio_app(app, demo, path="/")
-
-if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860)
